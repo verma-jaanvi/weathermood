@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeatherMood</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body
+    class="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-400 flex flex-col items-center justify-center text-white font-sans p-4">
+
+    <header class="w-full text-center mb-8">
+        <h1 class="text-4xl font-bold tracking-wide drop-shadow-lg">WeatherMood</h1>
+        <p class="text-lg opacity-80">Weather that feels like music 🎶</p>
+    </header>
+
+    <!-- 🔹 DASHBOARD SECTION (Shown after login) -->
+    <div id="dashboard-section" class="hidden w-full max-w-4xl">
+        <!-- Header Bar -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-4">
+                <img id="dashboard-profile-pic" class="w-12 h-12 rounded-full ring-2 ring-white/30 bg-gray-800" src="" alt="Profile" />
+                <div>
+                    <h2 id="dashboard-profile-name" class="text-xl font-semibold">Welcome!</h2>
+                    <p class="text-sm opacity-80" id="dashboard-email"></p>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button id="search-toggle" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg transition">
+                    <i class="fas fa-search mr-2"></i>Search Music
+                </button>
+                <button id="dashboard-logout" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 🔹 WEATHER CARD -->
+            <div class="bg-white/20 backdrop-blur-md rounded-2xl shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-cloud-sun"></i>Current Weather
+                </h3>
+                <div class="text-center">
+                    <h4 id="dashboard-city" class="text-lg font-semibold">🌍 Loading...</h4>
+                    <p id="dashboard-temperature" class="text-4xl font-bold my-3">--°C</p>
+                    <p id="dashboard-condition" class="text-lg italic">Loading weather...</p>
+                    <button id="dashboard-play-music" 
+                            class="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 
+                                   transition px-6 py-3 rounded-xl shadow-lg text-white font-semibold text-lg w-full"
+                            data-condition="">
+                        <i class="fas fa-music mr-2"></i>Get Mood Music
+                    </button>
+                </div>
+            </div>
+
+            <!-- 🔹 SEARCH CARD -->
+            <div id="search-card" class="bg-white/20 backdrop-blur-md rounded-2xl shadow-lg p-6 hidden lg:col-span-2">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-search"></i>Search Music
+                </h3>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="search-input" 
+                           placeholder="Search for songs, artists, or genres..."
+                           class="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50">
+                    <button id="search-button" class="bg-green-500 hover:bg-green-600 px-6 py-2 rounded-lg transition">
+                        Search
+                    </button>
+                </div>
+                <div id="search-results" class="space-y-3 max-h-80 overflow-y-auto">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+
+            <!-- 🔹 RECOMMENDATIONS CARD -->
+            <div id="recommendations-card" class="bg-white/20 backdrop-blur-md rounded-2xl shadow-lg p-6 lg:col-span-3">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-headphones"></i>Your Music
+                </h3>
+                <div id="dashboard-recommendations">
+                    <p class="text-center opacity-70 py-8">Your music recommendations will appear here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 ORIGINAL LANDING SECTION (Shown before login) -->
+    <div id="landing-section">
+        <!-- user section  -->
+        <div id="profile-section"
+            class="bg-white/20 backdrop-blur-md rounded-2xl shadow-lg p-6 w-80 text-center mb-6 hidden transition transform hover:scale-105">
+            <img id="profile-pic" class="w-24 h-24 rounded-full mx-auto mb-3 ring-4 ring-white/30 shadow-lg bg-gray-800" src="" alt="Profile Picture" />
+            <h2 id="profile-name" class="text-2xl font-semibold">User Name</h2>
+            <p class="text-sm opacity-80">Welcome to WeatherMood!</p>
+            <button id="logout-button"
+                class="mt-4 bg-red-500 hover:bg-red-600 transition px-5 py-2 rounded-xl shadow-md text-white font-semibold">
+                Logout
+            </button>
+        </div>
+
+        <main
+            class="bg-white/20 backdrop-blur-md rounded-2xl shadow-lg p-6 w-80 text-center transition transform hover:scale-105">
+            <h2 id="city" class="text-2xl font-semibold drop-shadow">🌍 Loading City...</h2>
+            <p id="temperature" class="text-5xl font-extrabold my-4">--°C</p>
+            <p id="condition" class="text-xl italic mb-2">☁️ Loading Weather...</p>
+
+            <hr class="border-white/40 my-4" />
+
+            <!-- ✅ Music Section -->
+            <div id="music-section" class="hidden">
+                <p class="text-lg mb-3">Weather-Based Music 🎵</p>
+                <button id="play-music"
+                    class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 
+                           transition px-6 py-3 rounded-xl shadow-lg text-white font-semibold text-lg
+                           transform hover:scale-105 active:scale-95"
+                    data-condition="">
+                    🎵 Get Mood Music
+                </button>
+                <p class="text-sm opacity-70 mt-2">Personalized recommendations based on your weather</p>
+            </div>
+
+            <div class="mt-6">
+                <div id="login-container" class="mt-6">
+                    <a href="/login"
+                        class="bg-green-500 hover:bg-green-600 transition px-5 py-2 rounded-xl shadow-md inline-block font-semibold">
+                        🎧 Login with Spotify
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="mt-10 text-sm opacity-80 text-center">
+        Built with 💙 for weather & music lovers <br />
+        <span class="opacity-60">© 2025 WeatherMood</span>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

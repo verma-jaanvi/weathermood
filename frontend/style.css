@@ -1,0 +1,94 @@
+/* Custom scrollbar for recommendations */
+#recommendations-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+#recommendations-section::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+#recommendations-section::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+#recommendations-section::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Audio player styling */
+audio {
+    border-radius: 20px;
+    height: 32px;
+    min-width: 120px;
+}
+
+audio::-webkit-media-controls-panel {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+audio::-webkit-media-controls-play-button {
+    background-color: #10B981;
+    border-radius: 50%;
+}
+
+/* Mobile improvements */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    main,
+    #profile-section {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .flex.items-center.gap-4 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    audio {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+/* Smooth animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Button animations */
+.btn-pulse:hover {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
