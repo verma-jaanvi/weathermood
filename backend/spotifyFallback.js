@@ -11,7 +11,7 @@ class SpotifyFallback {
     // Method 1: Use search API as fallback (always works)
     async getTracksBySearch(genre) {
         try {
-            const searchUrl = `${this.baseURL}/search?q=genre:${genre}&type=track&limit=10&market=US`;
+            const searchUrl = `${this.baseURL}/search?q=genre:${genre}&type=track&limit=26&market=US`;
             const response = await fetch(searchUrl, {
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`,
@@ -33,7 +33,7 @@ class SpotifyFallback {
     // Method 2: Get user's saved tracks (always works)
     async getUserSavedTracks() {
         try {
-            const url = `${this.baseURL}/me/tracks?limit=10`;
+            const url = `${this.baseURL}/me/tracks?limit=26`;
             const response = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`,
@@ -55,7 +55,7 @@ class SpotifyFallback {
     // Method 3: Get user's top tracks (usually works)
     async getUserTopTracks() {
         try {
-            const url = `${this.baseURL}/me/top/tracks?limit=10&time_range=short_term`;
+            const url = `${this.baseURL}/me/top/tracks?limit=26&time_range=short_term`;
             const response = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`,
@@ -78,7 +78,7 @@ class SpotifyFallback {
     async getFeaturedPlaylistTracks() {
         try {
             // First get featured playlists
-            const playlistsUrl = `${this.baseURL}/browse/featured-playlists?limit=5`;
+            const playlistsUrl = `${this.baseURL}/browse/featured-playlists?limit=26`;
             const playlistsResponse = await fetch(playlistsUrl, {
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`,
@@ -94,7 +94,7 @@ class SpotifyFallback {
             // Get tracks from first playlist
             if (playlistsData.playlists.items.length > 0) {
                 const playlistId = playlistsData.playlists.items[0].id;
-                const tracksUrl = `${this.baseURL}/playlists/${playlistId}/tracks?limit=10`;
+                const tracksUrl = `${this.baseURL}/playlists/${playlistId}/tracks?limit=26`;
                 const tracksResponse = await fetch(tracksUrl, {
                     headers: {
                         'Authorization': `Bearer ${this.accessToken}`,
@@ -206,7 +206,7 @@ class SpotifyFallback {
         }
 
         return {
-            tracks: tracks.slice(0, 10), // Return max 10 tracks
+            tracks: tracks.slice(0, 26), // 🔥 CHANGED FROM 10 TO 26 TRACKS
             method: methodUsed,
             searchTerm: searchTermUsed
         };

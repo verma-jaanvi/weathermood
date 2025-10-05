@@ -402,7 +402,7 @@ app.get("/search", async (req, res, next) => {
             params: {
                 q: q,
                 type: 'track',
-                limit: 10,
+                limit: 20,
                 market: 'US'
             }
         });

@@ -9,7 +9,9 @@ const CONFIG = {
     },
     APP: {
         PORT: process.env.PORT || 5000,
-        SESSION_SECRET: process.env.SESSION_SECRET
+        SESSION_SECRET: process.env.SESSION_SECRET,
+        // 🔥 ADD THIS:
+        TRACK_LIMIT: 25
     }
 };
 
