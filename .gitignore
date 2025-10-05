@@ -1,4 +1,4 @@
-# .gitignore
+# .gitignore - Place in ROOT directory
 node_modules/
 .env
 .DS_Store
@@ -8,3 +8,5 @@ sessions/
 .env.development.local
 .env.test.local
 .env.production.local
+backend/sessions/
+backend/node_modules/

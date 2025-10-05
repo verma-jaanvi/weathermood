@@ -10,6 +10,14 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const FileStore = require('session-file-store')(session);
 
+// Add at the top of backend/server.js
+const CONFIG = require('../config');  // ← Go up one level to root
+
+console.log(`🚀 Starting ${CONFIG.PROJECT.NAME} v${CONFIG.PROJECT.VERSION}`);
+console.log(`📁 GitHub: ${CONFIG.PROJECT.GITHUB_URL}`);
+
+// The rest of your server code...
+
 const SpotifyFallback = require('./spotifyFallback');
 
 // Add this near the top of server.js after the imports

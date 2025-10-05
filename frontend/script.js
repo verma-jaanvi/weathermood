@@ -1,3 +1,37 @@
+// Add this at the top of frontend/script.js to verify config is loaded
+console.log('Project:', window.CONFIG?.PROJECT?.NAME || 'Config not loaded');
+
+// Update your share function
+function shareRecommendations() {
+    const data = window.currentWeatherData;
+    if (!data) {
+        alert('No recommendations to share');
+        return;
+    }
+    
+    // Use the GitHub URL from config
+    const projectUrl = window.CONFIG?.PROJECT?.GITHUB_URL || "https://github.com/YOUR_USERNAME/weathermood";
+    
+    const shareText = `🎵 ${data.mood} - ${data.tracks.length} tracks for ${data.condition} weather!\n\n` +
+                     `I discovered this amazing playlist using WeatherMood - an app that creates music playlists based on your current weather! 🌤️🎶\n\n` +
+                     `Check out the project: ${projectUrl}\n\n` +
+                     `Featured tracks:\n` +
+                     `${data.tracks.slice(0, 3).map((track, index) => `${index + 1}. ${track.name} - ${track.artists.join(', ')}`).join('\n')}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: `🎵 ${data.mood} - WeatherMood Playlist`,
+            text: shareText,
+            url: projectUrl
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(shareText).then(() => {
+            alert('Playlist copied to clipboard! Share it with your friends! 📋\n\nProject: ' + projectUrl);
+        });
+    }
+}
+
 // =========================
 // 🔹 STATE MANAGEMENT
 // =========================
