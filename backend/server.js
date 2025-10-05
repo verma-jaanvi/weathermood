@@ -121,23 +121,34 @@ app.get("/login", (req, res) => {
     res.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
 });
 
+// ===================================================
+// 🔹 SPOTIFY AUTH CALLBACK
+// ===================================================
 app.get("/callback", async (req, res, next) => {
     try {
         const code = req.query.code;
+        const error = req.query.error;
 
-        if (!code) {
-            return res.status(400).send("No authorization code received");
+        if (error) {
+            console.error('Spotify auth error:', error);
+            return res.redirect('/?error=auth_failed');
         }
 
-        const params = new URLSearchParams({
-            grant_type: "authorization_code",
-            code: code,
-            redirect_uri: process.env.SPOTIFY_REDIRECT_URI,
-        });
+        if (!code) {
+            console.error('No authorization code received');
+            return res.redirect('/?error=no_code');
+        }
 
+        console.log('🔄 Exchanging code for access token...');
+
+        // Add timeout to the token request
         const tokenResponse = await axios.post(
             `https://accounts.spotify.com/api/token`,
-            params,
+            new URLSearchParams({
+                grant_type: "authorization_code",
+                code: code,
+                redirect_uri: process.env.SPOTIFY_REDIRECT_URI,
+            }),
             {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -145,22 +156,89 @@ app.get("/callback", async (req, res, next) => {
                         `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
                     ).toString("base64"),
                 },
+                timeout: 10000, // 10 second timeout
             }
         );
 
-        const { access_token, refresh_token } = tokenResponse.data;
+        const { access_token, refresh_token, expires_in } = tokenResponse.data;
 
+        if (!access_token) {
+            throw new Error('No access token received from Spotify');
+        }
+
+        // Store tokens in session
         req.session.access_token = access_token;
         req.session.refresh_token = refresh_token;
+        req.session.token_expires = Date.now() + (expires_in * 1000);
 
         console.log('✅ User logged in successfully');
         res.redirect('/');
 
     } catch (err) {
-        console.error('Callback error:', err.message);
-        next(err);
+        console.error('❌ Callback error:', err.message);
+        
+        if (err.code === 'ECONNABORTED') {
+            console.error('Spotify API timeout - server might be busy');
+            res.redirect('/?error=timeout');
+        } else if (err.response) {
+            console.error('Spotify API error:', err.response.status, err.response.data);
+            res.redirect('/?error=spotify_api');
+        } else {
+            next(err);
+        }
     }
 });
+
+// ===================================================
+// 🔹 SPOTIFY TOKEN REFRESH MIDDLEWARE
+// ===================================================
+async function refreshSpotifyToken(req, res, next) {
+    if (!req.session.refresh_token) {
+        return next();
+    }
+
+    // Check if token is expired or about to expire (within 5 minutes)
+    const tokenExpires = req.session.token_expires;
+    if (tokenExpires && Date.now() < tokenExpires - 300000) {
+        return next();
+    }
+
+    try {
+        console.log('🔄 Refreshing Spotify token...');
+        
+        const tokenResponse = await axios.post(
+            `https://accounts.spotify.com/api/token`,
+            new URLSearchParams({
+                grant_type: "refresh_token",
+                refresh_token: req.session.refresh_token,
+            }),
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Authorization": "Basic " + Buffer.from(
+                        `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+                    ).toString("base64"),
+                },
+                timeout: 10000,
+            }
+        );
+
+        req.session.access_token = tokenResponse.data.access_token;
+        req.session.token_expires = Date.now() + (tokenResponse.data.expires_in * 1000);
+        
+        console.log('✅ Token refreshed successfully');
+        next();
+    } catch (err) {
+        console.error('❌ Token refresh failed:', err.message);
+        // Clear invalid tokens
+        req.session.access_token = null;
+        req.session.refresh_token = null;
+        next();
+    }
+}
+
+// Apply to all routes that need Spotify access
+app.use(['/me', '/recommendations', '/search', '/create-playlist'], refreshSpotifyToken);
 
 app.get("/me", async (req, res, next) => {
     try {
